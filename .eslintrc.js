@@ -1,10 +1,9 @@
 module.exports = {
-  root: true,
-  // This tells ESLint to load the config from the package `eslint-config-custom`
-  extends: ["custom"],
-  settings: {
-    next: {
-      rootDir: ["apps/*/"],
-    },
+  extends: "eslint-config-labrys",
+  parser: "@typescript-eslint/parser",
+  rules: {
+    "eslint-comments/disable-enable-pair": "off",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": "error",
   },
 };

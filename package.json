@@ -1,5 +1,5 @@
 {
-  "name": "dwai",
+  "name": "sde-bitmaps",
   "version": "0.0.0",
   "private": true,
   "workspaces": [
@@ -13,12 +13,31 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
+    "@shopify/eslint-plugin": "^42.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.16.0",
+    "@typescript-eslint/parser": "^5.16.0",
+    "eslint": "^8.12",
     "eslint-config-custom": "*",
-    "prettier": "latest",
-    "turbo": "latest"
+    "eslint-config-labrys": "1.1.1",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.29.4",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "prettier": "^2.8.3",
+    "turbo": "latest",
+    "typescript": "^4.6.3"
   },
   "engines": {
     "node": ">=14.0.0"
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx, jsx}": [
+      "eslint --quiet --fix"
+    ],
+    "*.{json,md,html,js,jsx,ts,tsx}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {},
   "packageManager": "yarn@1.22.19"
