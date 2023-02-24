@@ -1,2 +1,14 @@
-node_modules
 .env
+node_modules
+deployments/localhost
+typechain-types
+cache
+coverage
+coverage.json
+artifacts
+
+.env*
+.flaskenv*
+!.env.project
+!.env.vault
+contract-exports.json

@@ -6,8 +6,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  await deploy("BitmapsCore", {
-    contract: "BitmapsCore",
+  await deploy("SdeBitmapsCore", {
+    contract: "SdeBitmapsCore",
     from: deployer,
     args: [],
     log: true,
@@ -16,4 +16,4 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 };
 
 export default func;
-func.tags = ["testbed", "_bitmapsCore"];
+func.tags = ["testbed", "_sdeBitmapsCore"];
