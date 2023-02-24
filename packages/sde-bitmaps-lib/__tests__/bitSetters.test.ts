@@ -2,7 +2,7 @@ import BN from "bn.js";
 import { expect } from "chai";
 import { constants } from "ethers";
 
-import { BigNumberBitmaps } from "../../../lib/BigNumberBitmaps";
+import { BigNumberBitmaps } from "../src";
 
 const { MaxUint256, Zero } = constants;
 

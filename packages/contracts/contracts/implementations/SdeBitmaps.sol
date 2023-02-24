@@ -1,11 +1,11 @@
 pragma solidity 0.8.18;
 // SPDX-License-Identifier: MIT
 
-import "./BitmapsCore.sol";
+import "./SdeBitmapsCore.sol";
 import "../interfaces/IBitmaps.sol";
 import "hardhat/console.sol";
 
-contract Bitmaps is IBitmaps {
+contract SdeBitmaps is IBitmaps {
     using BitmapsCore for BitmapsCore.BitMap;
 
     BitmapsCore.BitMap internal testBitmap;

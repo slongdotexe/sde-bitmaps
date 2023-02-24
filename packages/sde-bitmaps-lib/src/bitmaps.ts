@@ -1,10 +1,9 @@
 import BN from "bn.js";
 import { ethers } from "ethers";
 
-export const bitShiftLeft = (number: BN, places: number) => number.shln(places);
+const bitShiftLeft = (number: BN, places: number) => number.shln(places);
 
-export const bitShiftRight = (number: BN, places: number) =>
-  number.shrn(places);
+const bitShiftRight = (number: BN, places: number) => number.shrn(places);
 
 export const BNToEthersBN = (number: BN) =>
   ethers.BigNumber.from(`0x${number.toString(16)}`);

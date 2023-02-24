@@ -3,7 +3,7 @@ import BN from "bn.js";
 import { expect } from "chai";
 import { constants } from "ethers";
 
-import { BigNumberBitmaps } from "../../../lib/BigNumberBitmaps";
+import { BigNumberBitmaps } from "../src";
 
 describe("BigNumberBitmaps bitShiftRight tests", async () => {
   const fourBitsBN: BN = new BN("1111", 2);

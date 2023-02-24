@@ -105,7 +105,8 @@ export class BigNumberBitmaps {
 
   /**
    *
-   * @author: Originally authored in the BigNumber class with ether.js as toHex
+   * @author: Richard Moore
+   * @github
    */
   static ethersToHex(value: string | BN): string {
     // For BN, call on the hex string

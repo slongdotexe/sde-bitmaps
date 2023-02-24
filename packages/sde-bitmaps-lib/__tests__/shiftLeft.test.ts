@@ -2,7 +2,7 @@ import BN from "bn.js";
 import { expect } from "chai";
 import { constants } from "ethers";
 
-import { BigNumberBitmaps } from "../../../lib/BigNumberBitmaps";
+import { BigNumberBitmaps } from "../src";
 
 describe("BigNumberBitmaps bitShiftLeft tests", async () => {
   const fourBitsBN: BN = new BN("1111", 2);
@@ -64,7 +64,7 @@ describe("BigNumberBitmaps bitShiftLeft tests", async () => {
       const result = new BigNumberBitmaps(constants.MaxUint256).bitShiftLeft(
         shift
       );
-      // Edge-ish case, nit width of dec0 is 0
+      // Edge-ish case, bit width of dec0 is `0`
       if (shift === 256) {
         expect(result.toBN().bitLength()).eq(0);
         return;

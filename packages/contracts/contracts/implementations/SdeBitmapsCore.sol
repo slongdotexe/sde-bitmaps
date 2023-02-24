@@ -2,7 +2,7 @@ pragma solidity 0.8.18;
 
 // SPDX-License-Identifier: MIT
 
-library BitmapsCore {
+library SdeBitmapsCore {
     struct BitMap {
         mapping(uint256 => uint256) _data;
     }
