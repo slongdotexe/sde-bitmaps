@@ -1,7 +1,9 @@
 /* eslint-disable class-methods-use-this -- -- */
 /* eslint-disable no-param-reassign -- --*/
 import _BN from "bn.js";
-import { BigNumber, logger } from "ethers";
+import { BigNumber } from "ethers";
+
+import { getMaxBN } from "./helpers";
 
 import BN = _BN;
 
@@ -17,14 +19,13 @@ export class BigNumberBitmaps {
     return bn.testn(index);
   }
 
-  // TODO add tests
   isBitsSet(indices: number[]): boolean {
     return indices.every((bitIndex) => this.isBitSet(bitIndex));
   }
 
   setBit(index: number): BigNumberBitmaps {
     const bn = this.toBN();
-    return BigNumberBitmaps.fromBN(
+    return BigNumberBitmaps.from(
       bn.setn(
         index,
         // @ts-ignore @types issue
@@ -35,7 +36,7 @@ export class BigNumberBitmaps {
 
   unsetBit(index: number): BigNumberBitmaps {
     const bn = this.toBN();
-    return BigNumberBitmaps.fromBN(
+    return BigNumberBitmaps.from(
       bn.setn(
         index,
         // @ts-ignore @types issue
@@ -53,7 +54,7 @@ export class BigNumberBitmaps {
         1
       );
     });
-    return BigNumberBitmaps.fromBN(bn);
+    return BigNumberBitmaps.from(bn);
   }
 
   unsetBits(indices: number[]): BigNumberBitmaps {
@@ -62,100 +63,77 @@ export class BigNumberBitmaps {
       // @ts-ignore @types issue
       bn.setn(indices[i], 0);
     }
-    return BigNumberBitmaps.fromBN(bn);
+    return BigNumberBitmaps.from(bn);
   }
 
   bitShiftLeft(places: number, width?: number): BigNumberBitmaps {
     const bn = this.toBN();
     const bnWidth = bn.bitLength();
     const result = bn.shln(places).maskn(width ?? bnWidth);
-    return BigNumberBitmaps.fromBN(result);
+    return BigNumberBitmaps.from(result);
   }
 
   bitShiftRight(places: number, width?: number): BigNumberBitmaps {
     const bn = this.toBN();
     const bnWidth = bn.bitLength();
     const result = bn.shrn(places).maskn(width ?? bnWidth);
-    return BigNumberBitmaps.fromBN(result);
+    return BigNumberBitmaps.from(result);
   }
 
-  toBigNumberBitmaps(value: BigNumber) {
-    return new BigNumberBitmaps(value);
+  selectInsideRange(
+    start: number,
+    end: number,
+    width = this.toBN().bitLength()
+  ): BigNumberBitmaps {
+    return this.maskRange(start, end, width, false);
+  }
+
+  selectOutsideRange(
+    start: number,
+    end: number,
+    width = this.toBN().bitLength()
+  ) {
+    return this.maskRange(start, end, width, true);
+  }
+
+  maskRange(start: number, end: number, width: number, invert: boolean) {
+    const bn = this.toBN();
+    // Mask off extra bits beyond the intended width (provided or original)
+    const startMask = getMaxBN(width).shln(start).maskn(width);
+    const endMask = getMaxBN(width).shrn(width - 1 - end);
+    const finalMask = invert
+      ? startMask.and(endMask).notn(width)
+      : startMask.and(endMask);
+    return BigNumberBitmaps.from(bn.and(finalMask));
   }
 
   toBN(): BN {
     return BigNumberBitmaps.BigNumberishToBN(this.value);
   }
 
-  static fromBN(value: BN): BigNumberBitmaps {
-    return new BigNumberBitmaps(BigNumberBitmaps.BNtoBigNumber(value));
+  static from(value: any) {
+    if (value instanceof BigNumberBitmaps) {
+      return value;
+    }
+    if (value instanceof BigNumber) {
+      return new BigNumberBitmaps(value);
+    }
+    if (value instanceof BN) {
+      return new BigNumberBitmaps(BigNumber.from(`0x${value.toString("hex")}`));
+    }
+
+    return new BigNumberBitmaps(BigNumber.from(`0x${value.toString("hex")}`));
+  }
+
+  static fromBinary(binary: string): BigNumberBitmaps {
+    return BigNumberBitmaps.from(new BN(binary, 2).toString("hex"));
   }
 
   static BigNumberishToBN(value: BigNumber): BN {
     const hex = BigNumber.from(value).toHexString();
     if (hex[0] === "-") {
-      return new BN(`-${hex.substring(3)}`, 16);
+      return new BN(`-${hex.substring(3)}`, "hex");
     }
-    return new BN(hex.substring(2), 16);
-  }
-
-  static BNtoBigNumber(value: BN): BigNumber {
-    return BigNumber.from(this.ethersToHex(value));
-  }
-
-  /**
-   *
-   * @author: Richard Moore
-   * @github
-   */
-  static ethersToHex(value: string | BN): string {
-    // For BN, call on the hex string
-    if (typeof value !== "string") {
-      return this.ethersToHex(value.toString(16));
-    }
-
-    // If negative, prepend the negative sign to the normalized positive value
-    if (value[0] === "-") {
-      // Strip off the negative sign
-      value = value.substring(1);
-
-      // Cannot have multiple negative signs (e.g. "--0x04")
-      if (value[0] === "-") {
-        logger.throwArgumentError("invalid hex", "value", value);
-      }
-
-      // Call toHex on the positive component
-      value = this.ethersToHex(value);
-
-      // Do not allow "-0x00"
-      if (value === "0x00") {
-        return value;
-      }
-
-      // Negate the value
-      return `-${value}`;
-    }
-
-    // Add a "0x" prefix if missing
-    if (value.substring(0, 2) !== "0x") {
-      value = `0x${value}`;
-    }
-
-    // Normalize zero
-    if (value === "0x") {
-      return "0x00";
-    }
-
-    // Make the string even length
-    if (value.length % 2) {
-      value = `0x0${value.substring(2)}`;
-    }
-
-    // Trim to smallest even-length string
-    while (value.length > 4 && value.substring(0, 4) === "0x00") {
-      value = `0x${value.substring(4)}`;
-    }
-
-    return value;
+    return new BN(hex.substring(2), "hex");
   }
 }

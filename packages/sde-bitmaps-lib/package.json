@@ -6,7 +6,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "test-lib": "npx mocha -r ts-node/register '__tests__/**/*.ts'"
+    "test-lib": "npx mocha -r ts-node/register '__tests__/**/*.test.ts'"
   },
   "dependencies": {
     "@typegoose/typegoose": "^10.0.0",
