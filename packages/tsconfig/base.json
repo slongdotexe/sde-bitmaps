@@ -20,7 +20,9 @@
     "rootDir": "../../",
     "noEmit": true,
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "jsx": "react-jsx",
+    "resolveJsonModule": true
   },
   "exclude": ["node_modules"]
 }

@@ -3,28 +3,37 @@ pragma solidity 0.8.18;
 
 import "./SdeBitmapsCore.sol";
 import "../interfaces/ISdeBitmaps.sol";
-import "hardhat/console.sol";
 
 contract SdeBitmaps is ISdeBitmaps {
-  using SdeBitmapsCore for SdeBitmapsCore.BitMap;
+    using SdeBitmapsCore for SdeBitmapsCore.BitMap;
 
-  SdeBitmapsCore.BitMap internal testBitmap;
+    SdeBitmapsCore.BitMap internal testBitmap;
 
-  constructor() {}
+    function selectInsideRange(
+        uint256 _bucketIndex,
+        uint8 _start,
+        uint8 _end
+    ) public view returns (uint256 bucketBits) {
+        bucketBits = testBitmap.selectInsideRange(_bucketIndex, _start, _end);
+    }
 
-  function setBucket() external override {
-    testBitmap.setBucket(0, type(uint256).max);
-  }
+    function getBucket(
+        uint256 _bucketIndex
+    ) external view returns (uint256 bucketBits) {
+        bucketBits = testBitmap.getBucket(_bucketIndex);
+    }
 
-  function getBucket() external view override returns (uint256 bucket) {
-    bucket = SdeBitmapsCore.maskInsideRange(testBitmap.getBucket(0), 0, 16);
-    console.log(bucket);
-  }
+    function setBucket(uint256 _bucketIndex, uint256 _bucketContents) external {
+        testBitmap.setBucket(_bucketIndex, _bucketContents);
+    }
 
-  function generateMask(
-    uint256 _start,
-    uint256 _end
-  ) external pure returns (uint256 mask) {
-    mask = SdeBitmapsCore.createMask(_start, _end);
-  }
+    function setBit(uint256 _bitIndex) external {
+        testBitmap.setBit(_bitIndex);
+    }
+
+    function unsetBit(uint256 _bitIndex) external {
+        testBitmap.unsetBit(_bitIndex);
+    }
+
+    constructor() {}
 }
