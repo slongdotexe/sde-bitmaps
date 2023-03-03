@@ -24,8 +24,6 @@ describe("SdeBitmapsCore bit setter tests", async () => {
 
     get256Indices().forEach((bitIndex) => {
       it(`should set bit ${bitIndex}`, async () => {
-        await deployments.fixture("testbed");
-
         const beforeBnBm = new BigNumberBitmaps(
           await SdeBitmapsContract.getBucket(bucketIndex)
         );
@@ -39,6 +37,31 @@ describe("SdeBitmapsCore bit setter tests", async () => {
 
         expect(afterBnBm.value).to.equal(
           new BigNumberBitmaps(ethers.constants.Zero).setBit(bitIndex).value
+        );
+      });
+    });
+
+    get256Indices().forEach((bitIndex) => {
+      it(`should unset bit ${bitIndex}`, async () => {
+        await SdeBitmapsContract.setBucket(
+          bucketIndex,
+          ethers.constants.MaxUint256
+        );
+
+        const beforeBnBm = new BigNumberBitmaps(
+          await SdeBitmapsContract.getBucket(bucketIndex)
+        );
+        expect(beforeBnBm.value).to.equal(
+          new BigNumberBitmaps(ethers.constants.MaxUint256).value
+        );
+        await SdeBitmapsContract.unsetBit(bitIndex);
+        const afterBnBm = new BigNumberBitmaps(
+          await SdeBitmapsContract.getBucket(bucketIndex)
+        );
+
+        expect(afterBnBm.value).to.equal(
+          new BigNumberBitmaps(ethers.constants.MaxUint256).unsetBit(bitIndex)
+            .value
         );
       });
     });
