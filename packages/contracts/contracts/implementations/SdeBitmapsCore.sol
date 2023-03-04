@@ -83,6 +83,22 @@ library SdeBitmapsCore {
     }
 
     /**
+     *
+     * @dev Unsets the bit indices in `indeices` in the bucket at `bucketIndex`.
+     */
+    function unsetBitsInBucket(
+        BitMap storage _bitmap,
+        uint256 bucketIndex,
+        uint8[] calldata indeices
+    ) internal {
+        uint256 bucket = _bitmap._data[bucketIndex];
+        for (uint256 i = 0; i < indeices.length; i++) {
+            bucket &= ~(1 << indeices[i]);
+        }
+        _bitmap._data[bucketIndex] = bucket;
+    }
+
+    /**
      * @dev Returns bucket at `bucketIndex`, masked to only include bits between `_start` and `_end`.
      */
     function selectInsideRange(

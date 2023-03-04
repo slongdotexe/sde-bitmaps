@@ -51,5 +51,12 @@ contract TestSdeBitmaps is ITestSdeBitmaps {
         testBitmap.setBitsInBucket(bucketIndex, bits);
     }
 
+    function test_unsetBitsInBucket(
+        uint256 bucketIndex,
+        uint8[] calldata bits
+    ) external {
+        testBitmap.unsetBitsInBucket(bucketIndex, bits);
+    }
+
     constructor() {}
 }

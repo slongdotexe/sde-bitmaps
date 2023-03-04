@@ -30,4 +30,9 @@ interface ITestSdeBitmaps {
         uint256 bucketIndex,
         uint8[] calldata bits
     ) external;
+
+    function test_unsetBitsInBucket(
+        uint256 bucketIndex,
+        uint8[] calldata bits
+    ) external;
 }
