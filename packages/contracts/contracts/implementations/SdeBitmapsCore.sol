@@ -7,6 +7,15 @@ library SdeBitmapsCore {
         mapping(uint256 => uint256) _data;
     }
 
+    function getBucketFromBitIndex(
+        uint256 bitIndex
+    ) internal pure returns (uint256 bucket) {
+        bucket = bitIndex >> 8;
+    }
+
+    /**
+     * @dev Gets the bucket at `bucketIndex` (raw value).
+     */
     function getBucket(
         BitMap storage bitmap,
         uint256 bucketIndex
@@ -14,6 +23,9 @@ library SdeBitmapsCore {
         bucket = bitmap._data[bucketIndex];
     }
 
+    /**
+     * @dev Sets the bucket at `bucketIndex` to `bucketContents` (raw value).
+     */
     function setBucket(
         BitMap storage bitmap,
         uint256 index,
@@ -24,33 +36,20 @@ library SdeBitmapsCore {
 
     /**
      * @dev Returns whether the bit at `index` is set.
+     * Originally published in Bitmaps.sol by OpenZeppelin as `get`
      */
-    function isBitSet(
-        BitMap storage bitmap,
-        uint256 bitIndex
-    ) internal view returns (bool) {
-        uint256 bucket = getBucketFromBitIndex(bitIndex);
-        uint256 mask = 1 << (bitIndex & 0xff);
-        return bitmap._data[bucket] & mask != 0;
-    }
-
-    /**
-     * @dev Sets the bit at `index` to the boolean `value`.
-     */
-    function setBitTo(
-        BitMap storage bitmap,
-        uint256 index,
-        bool value
-    ) internal {
-        if (value) {
-            setBit(bitmap, index);
-        } else {
-            unsetBit(bitmap, index);
-        }
+    function getBit(
+        BitMap storage _bitmap,
+        uint256 _index
+    ) internal view returns (bool isSet) {
+        uint256 bucket = _index >> 8;
+        uint256 mask = 1 << (_index & 0xff);
+        return _bitmap._data[bucket] & mask != 0;
     }
 
     /**
      * @dev Sets the bit at `index`.
+     * Orignally published in Bitmaps.sol by OpenZeppelin as `set`
      */
     function setBit(BitMap storage bitmap, uint256 bitIndex) internal {
         uint256 bucket = bitIndex >> 8;
@@ -60,6 +59,7 @@ library SdeBitmapsCore {
 
     /**
      * @dev Unsets the bit at `index`.
+     * Orignally published in Bitmaps.sol by OpenZeppelin as `unset`
      */
     function unsetBit(BitMap storage bitmap, uint256 bitIndex) internal {
         uint256 bucket = getBucketFromBitIndex(bitIndex);
@@ -67,12 +67,24 @@ library SdeBitmapsCore {
         bitmap._data[bucket] &= ~mask;
     }
 
-    function getBucketFromBitIndex(
-        uint256 bitIndex
-    ) internal pure returns (uint256 bucket) {
-        bucket = bitIndex >> 8;
+    /**
+     * @dev Sets the bit indices in `indeices` in the bucket at `bucketIndex`.
+     */
+    function setBitsInBucket(
+        BitMap storage _bitmap,
+        uint256 bucketIndex,
+        uint8[] calldata indeices
+    ) internal {
+        uint256 bucket = _bitmap._data[bucketIndex];
+        for (uint256 i = 0; i < indeices.length; i++) {
+            bucket |= 1 << indeices[i];
+        }
+        _bitmap._data[bucketIndex] = bucket;
     }
 
+    /**
+     * @dev Returns bucket at `bucketIndex`, masked to only include bits between `_start` and `_end`.
+     */
     function selectInsideRange(
         BitMap storage _bitmap,
         uint256 _bucketIndex,
@@ -83,6 +95,7 @@ library SdeBitmapsCore {
             (type(uint256).max >> (255 - _end));
         bits = getBucket(_bitmap, _bucketIndex) & mask;
     }
+
     //TODO WIP
     // function maskInsideRange(
     //   uint256 _bits,

@@ -111,7 +111,11 @@ export class BigNumberBitmaps {
     return BigNumberBitmaps.BigNumberishToBN(this.value);
   }
 
-  static from(value: any) {
+  static new() {
+    return new BigNumberBitmaps(BigNumber.from(0));
+  }
+
+  static from(value: any): BigNumberBitmaps {
     if (value instanceof BigNumberBitmaps) {
       return value;
     }

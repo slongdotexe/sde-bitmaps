@@ -6,8 +6,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  await deploy("SdeBitmaps", {
-    contract: "SdeBitmaps",
+  await deploy("TestSdeBitmaps", {
+    contract: "TestSdeBitmaps",
     from: deployer,
     args: [],
     log: true,
