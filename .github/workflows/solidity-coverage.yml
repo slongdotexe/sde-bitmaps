@@ -1,0 +1,33 @@
+name: Contract Coverage
+on:
+  [push]
+  # pull_request:
+  #   types:
+  #     - opened
+  #     - reopened
+  #     - synchronize
+
+jobs:
+  contract-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🏗 Checkout Repo
+        uses: actions/checkout@v2
+        cache: yarn
+
+      - name: ⚙️ Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: yarn
+
+      - name: 🧶 Install Packages with Yarn
+        run: yarn install
+
+      - name: 🧪 Run Coverage
+        run: yarn hardhat coverage
+
+      - name: 🧪 Run Coverage Report
+        uses: romeovs/lcov-reporter-action@v0.2.16
+        with:
+          lcov-file: .packages/contracts/coverage/lcov.info
