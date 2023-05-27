@@ -9,7 +9,7 @@ on:
 
 jobs:
   contract-coverage:
-    runs-on: ubuntu-latest
+    runs-on: ethereum/solc:stable
     steps:
       - name: 🏗 Checkout Repo
         uses: actions/checkout@v2
