@@ -1,10 +1,8 @@
 import BN from "bn.js";
 import { expect } from "chai";
-import { constants } from "ethers";
 
 import { BigNumberBitmaps } from "../src";
-
-const { MaxUint256, Zero } = constants;
+import { MaxUint256, Zero } from "../src/constants";
 
 describe("BigNumberBitmaps bit setter tests", async () => {
   const MaxUint256BnBm = new BigNumberBitmaps(MaxUint256);

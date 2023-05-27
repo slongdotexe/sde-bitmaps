@@ -1,16 +1,14 @@
-/* eslint-disable class-methods-use-this -- -- */
-/* eslint-disable no-param-reassign -- --*/
+import { BigNumber } from "@ethersproject/bignumber";
 import _BN from "bn.js";
-import { BigNumber } from "ethers";
 
 import { getMaxBN } from "./helpers";
 
 import BN = _BN;
 
 export class BigNumberBitmaps {
-  public value: BigNumber;
+  public value: BigInt;
 
-  constructor(val: BigNumber) {
+  constructor(val: BigInt) {
     this.value = val;
   }
 
@@ -108,11 +106,19 @@ export class BigNumberBitmaps {
   }
 
   toBN(): BN {
-    return BigNumberBitmaps.BigNumberishToBN(this.value);
+    return new BN(this.value.toString());
+  }
+
+  toBigNumber(): BigNumber {
+    return BigNumber.from(this.value.toString());
+  }
+
+  toBigInt(): BigInt {
+    return this.value;
   }
 
   static new() {
-    return new BigNumberBitmaps(BigNumber.from(0));
+    return new BigNumberBitmaps(0n);
   }
 
   static from(value: any): BigNumberBitmaps {
@@ -120,17 +126,21 @@ export class BigNumberBitmaps {
       return value;
     }
     if (value instanceof BigNumber) {
-      return new BigNumberBitmaps(value);
+      return new BigNumberBitmaps(BigInt(value.toString()));
     }
     if (value instanceof BN) {
-      return new BigNumberBitmaps(BigNumber.from(`0x${value.toString("hex")}`));
+      return new BigNumberBitmaps(BigInt(value.toString()));
     }
 
-    return new BigNumberBitmaps(BigNumber.from(`0x${value.toString("hex")}`));
+    if (value instanceof BigInt) {
+      return new BigNumberBitmaps(BigInt(value.toString()));
+    }
+
+    return new BigNumberBitmaps(BigInt(BigNumber.from(value).toString()));
   }
 
   static fromBinary(binary: string): BigNumberBitmaps {
-    return BigNumberBitmaps.from(new BN(binary, 2).toString("hex"));
+    return BigNumberBitmaps.from(`0x${new BN(binary, 2).toString("hex")}`);
   }
 
   static BigNumberishToBN(value: BigNumber): BN {

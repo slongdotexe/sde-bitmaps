@@ -1,3 +1,4 @@
+import { BigNumber } from "@ethersproject/bignumber";
 import BN from "bn.js";
 
 import { BigNumberBitmaps } from ".";
@@ -9,3 +10,11 @@ export const MaxUint256BN = new BN(
   "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
   "hex"
 );
+
+export const MaxUint256 = BigInt(MaxUint256BN.toString());
+
+export const Zero = 0n;
+
+export const MaxUint256BigNumber = BigNumber.from(MaxUint256BN.toString());
+
+export const ZeroBigNumber = BigNumber.from(0);

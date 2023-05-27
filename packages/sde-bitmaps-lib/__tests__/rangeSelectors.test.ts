@@ -1,9 +1,8 @@
-/* eslint-disable no-plusplus -- -- */
-
+import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
-import { BigNumber, constants as ethersConstants } from "ethers";
 
 import { BigNumberBitmaps } from "../src";
+import { MaxUint256BigNumber } from "../src/constants";
 
 describe("BigNumberBitmaps range selector tests", async () => {
   const testBits = "1111";
@@ -18,8 +17,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
         end,
         bitWidth
       );
-
-      expect(result.value.eq(expectedResult.value)).eq(true);
+      expect(result.toBigInt()).eq(expectedResult.toBigInt());
     });
 
     it("Should return `0011` when start=0 end=1", () => {
@@ -32,7 +30,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
         bitWidth
       );
 
-      expect(result.value.eq(expectedResult.value)).eq(true);
+      expect(result.toBigInt()).eq(expectedResult.toBigInt());
     });
 
     it("Should return `0111` when start=0 end=2", () => {
@@ -45,7 +43,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
         bitWidth
       );
 
-      expect(result.value.eq(expectedResult.value)).eq(true);
+      expect(result.toBigInt()).eq(expectedResult.toBigInt());
     });
 
     it("Should return `1111` when start=0 end=3", () => {
@@ -58,7 +56,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
         bitWidth
       );
 
-      expect(result.value.eq(expectedResult.value)).eq(true);
+      expect(result.toBigInt()).eq(expectedResult.toBigInt());
     });
 
     it("Should return `0010` when start=1 end=1", () => {
@@ -71,7 +69,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
         bitWidth
       );
 
-      expect(result.value.eq(expectedResult.value)).eq(true);
+      expect(result.toBigInt()).eq(expectedResult.toBigInt());
     });
 
     it("Should return `0110` when start=1 end=2", () => {
@@ -84,7 +82,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
         bitWidth
       );
 
-      expect(result.value.eq(expectedResult.value)).eq(true);
+      expect(result.toBigInt()).eq(expectedResult.toBigInt());
     });
 
     it("Should return `1110` when start=1 end=3", () => {
@@ -97,7 +95,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
         bitWidth
       );
 
-      expect(result.value.eq(expectedResult.value)).eq(true);
+      expect(result.toBigInt()).eq(expectedResult.toBigInt());
     });
 
     it("Should return `0100` when start=2 end=2", () => {
@@ -110,7 +108,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
         bitWidth
       );
 
-      expect(result.value.eq(expectedResult.value)).eq(true);
+      expect(result.toBigInt()).eq(expectedResult.toBigInt());
     });
 
     it("Should return `1100` when start=2 end=3", () => {
@@ -123,7 +121,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
         bitWidth
       );
 
-      expect(result.value.eq(expectedResult.value)).eq(true);
+      expect(result.toBigInt()).eq(expectedResult.toBigInt());
     });
 
     it("Should return `1000` when start=3 end=3", () => {
@@ -136,7 +134,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
         bitWidth
       );
 
-      expect(result.value.eq(expectedResult.value)).eq(true);
+      expect(result.toBigInt()).eq(expectedResult.toBigInt());
     });
 
     it("Should return the correct bits across a full 256 bit range", () => {
@@ -146,18 +144,17 @@ describe("BigNumberBitmaps range selector tests", async () => {
         for (let endIndex = 0; endIndex < _bitWidth; endIndex++) {
           if (startIndex < endIndex) break;
 
-          const startMask =
-            ethersConstants.MaxUint256.shl(startIndex).mask(_bitWidth);
+          const startMask = MaxUint256BigNumber.shl(startIndex).mask(_bitWidth);
 
-          const endMask = ethersConstants.MaxUint256.shr(255 - endIndex);
+          const endMask = MaxUint256BigNumber.shr(255 - endIndex);
 
           const finalMask = startMask.and(endMask);
           const expectedResult = BigNumber.from(finalMask);
 
           const result = BigNumberBitmaps.from(
-            ethersConstants.MaxUint256
+            MaxUint256BigNumber
           ).selectInsideRange(startIndex, endIndex, 256);
-          expect(result.value.eq(expectedResult)).eq(true);
+          expect(result.toBigInt()).eq(expectedResult.toBigInt());
         }
       }
     });
@@ -173,7 +170,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
         bitWidth
       );
 
-      expect(result.value.eq(expectedResult.value)).eq(true);
+      expect(result.toBigInt()).eq(expectedResult.toBigInt());
     });
 
     it("Should return `1100` when start=0 end=1", () => {
@@ -186,7 +183,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
         bitWidth
       );
 
-      expect(result.value.eq(expectedResult.value)).eq(true);
+      expect(result.toBigInt()).eq(expectedResult.toBigInt());
     });
 
     it("Should return `1000` when start=0 end=2", () => {
@@ -199,7 +196,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
         bitWidth
       );
 
-      expect(result.value.eq(expectedResult.value)).eq(true);
+      expect(result.toBigInt()).eq(expectedResult.toBigInt());
     });
 
     it("Should return `0000` when start=0 end=3", () => {
@@ -212,7 +209,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
         bitWidth
       );
 
-      expect(result.value.eq(expectedResult.value)).eq(true);
+      expect(result.toBigInt()).eq(expectedResult.toBigInt());
     });
 
     it("Should return `1101` when start=1 end=1", () => {
@@ -225,7 +222,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
         bitWidth
       );
 
-      expect(result.value.eq(expectedResult.value)).eq(true);
+      expect(result.toBigInt()).eq(expectedResult.toBigInt());
     });
 
     it("Should return `1001` when start=1 end=2", () => {
@@ -238,7 +235,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
         bitWidth
       );
 
-      expect(result.value.eq(expectedResult.value)).eq(true);
+      expect(result.toBigInt()).eq(expectedResult.toBigInt());
     });
 
     it("Should return `0001` when start=1 end=3", () => {
@@ -251,7 +248,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
         bitWidth
       );
 
-      expect(result.value.eq(expectedResult.value)).eq(true);
+      expect(result.toBigInt()).eq(expectedResult.toBigInt());
     });
 
     it("Should return `1011` when start=2 end=2", () => {
@@ -264,7 +261,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
         bitWidth
       );
 
-      expect(result.value.eq(expectedResult.value)).eq(true);
+      expect(result.toBigInt()).eq(expectedResult.toBigInt());
     });
 
     it("Should return `0011` when start=2 end=3", () => {
@@ -277,7 +274,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
         bitWidth
       );
 
-      expect(result.value.eq(expectedResult.value)).eq(true);
+      expect(result.toBigInt()).eq(expectedResult.toBigInt());
     });
 
     it("Should return `0111` when start=3 end=3", () => {
@@ -290,7 +287,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
         bitWidth
       );
 
-      expect(result.value.eq(expectedResult.value)).eq(true);
+      expect(result.toBigInt()).eq(expectedResult.toBigInt());
     });
 
     it("Should return the correct bits across a full 256 bit range", () => {
@@ -300,20 +297,18 @@ describe("BigNumberBitmaps range selector tests", async () => {
         for (let endIndex = 0; endIndex < _bitWidth; endIndex++) {
           if (startIndex < endIndex) break;
 
-          const startMask =
-            ethersConstants.MaxUint256.shl(startIndex).mask(_bitWidth);
+          const startMask = MaxUint256BigNumber.shl(startIndex).mask(_bitWidth);
 
-          const endMask = ethersConstants.MaxUint256.shr(255 - endIndex);
+          const endMask = MaxUint256BigNumber.shr(255 - endIndex);
 
-          const finalMask = startMask
-            .and(endMask)
-            .xor(ethersConstants.MaxUint256);
+          const finalMask = startMask.and(endMask).xor(MaxUint256BigNumber);
           const expectedResult = BigNumber.from(finalMask);
 
           const result = BigNumberBitmaps.from(
-            ethersConstants.MaxUint256
+            MaxUint256BigNumber
           ).selectOutsideRange(startIndex, endIndex, 256);
-          expect(result.value.eq(expectedResult)).eq(true);
+          // expect(result.value.eq(expectedResult)).eq(true);
+          expect(result.toBigInt()).eq(expectedResult.toBigInt());
         }
       }
     });
