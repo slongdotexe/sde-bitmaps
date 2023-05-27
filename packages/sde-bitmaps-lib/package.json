@@ -11,7 +11,9 @@
   "dependencies": {
     "@typegoose/typegoose": "^10.0.0",
     "axios": "^1.2.2",
-    "mongoose": "^6.8.3"
+    "ethers": "^5.7.2",
+    "mongoose": "^6.8.3",
+    "ethers-v6": "npm:ethers"
   },
   "devDependencies": {
     "@types/chai": "^4.3.4",
