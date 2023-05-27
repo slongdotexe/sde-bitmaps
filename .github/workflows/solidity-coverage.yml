@@ -13,7 +13,8 @@ jobs:
     steps:
       - name: 🏗 Checkout Repo
         uses: actions/checkout@v2
-        cache: yarn
+        with:
+          cache: yarn
 
       - name: ⚙️ Setup Node
         uses: actions/setup-node@v3
