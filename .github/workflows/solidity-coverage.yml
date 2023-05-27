@@ -25,6 +25,9 @@ jobs:
       - name: 🧶 Install Packages with Yarn
         run: yarn install
 
+      - name: ⚙️ Compile Contracts
+        run: cd ./packages/contracts && yarn hardhat compile
+
       - name: 🧪 Run Coverage
         run: cd ./packages/contracts && yarn hardhat coverage
 
