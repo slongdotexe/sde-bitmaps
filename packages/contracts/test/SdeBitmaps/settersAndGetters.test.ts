@@ -21,7 +21,7 @@ describe("SdeBitmaps setters and getters", async () => {
   const newValue = 10;
 
   describe("bucket setters and getters", async () => {
-    describe("getBucket from bit index", async () => {
+    describe("getBucketFromBitIndex", async () => {
       beforeEach(async () => {
         await deployments.fixture();
         [Deployer] = await ethers.getSigners();
