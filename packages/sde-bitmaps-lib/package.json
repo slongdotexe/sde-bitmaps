@@ -1,32 +1,41 @@
 {
   "name": "sde-bitmaps-lib",
   "version": "0.0.0",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "module": "src/index.ts",
   "license": "MIT",
   "private": true,
   "scripts": {
-    "test": "ts-mocha ./__tests__/**/*.test.ts"
+    "test": "ts-mocha ./__tests__/**/*.test.ts",
+    "dev": "NODE_ENV=development tsup",
+    "build": "NODE_ENV=production tsup"
   },
   "dependencies": {
     "@ethersproject/bignumber": "^5.7.0",
     "@typegoose/typegoose": "^10.0.0",
     "axios": "^1.2.2",
+    "bn.js": "^5.2.1",
     "ethers": "^5.7.2",
     "ethers-v6": "npm:ethers",
     "mongoose": "^6.8.3"
   },
   "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
+    "@types/bn.js": "^5.1.1",
     "@types/chai": "^4.3.4",
     "@types/chai-as-promised": "^7.1.5",
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.11.19",
     "chai": "^4.3.7",
     "chai-as-promised": "^7.1.1",
+    "chai-bn": "^0.3.1",
     "dotenv": "^16.0.3",
     "eslint": "^8.33.0",
+    "hardhat": "^2.14.1",
     "ts-mocha": "^10.0.0",
     "ts-node": "^10.9.1",
+    "tsup": "^6.7.0",
     "typescript": "^4.9.5"
   }
 }
