@@ -19,8 +19,16 @@ jobs:
         with:
           cache: yarn
 
-      - name: 🧶 Install Yarn
-        run: npm install -g yarn
+      - name: Install Git
+        run: apk add --no-cache git openssh
+
+      - name: Turborepo Prune
+        run: npx turbo prune --scope=contracts
+
+      - name: Install dependencies
+        run: |
+          cd out
+          yarn install --prefer-offline --frozen-lockfile
 
       - name: ⚙️ Setup Node
         uses: actions/setup-node@v3
