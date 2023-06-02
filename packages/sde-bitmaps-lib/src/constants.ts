@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import BN from "bn.js";
 
-import { BigNumberBitmaps } from ".";
+import { BigNumberBitmaps } from "./BigNumberBitmaps";
 
 export const fourBitsBN: BN = new BN("1111", 2);
 export const fourBitsBnBm = BigNumberBitmaps.from(fourBitsBN);

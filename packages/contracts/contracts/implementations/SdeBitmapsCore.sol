@@ -7,10 +7,22 @@ library SdeBitmapsCore {
     mapping(uint256 => uint256) _data;
   }
 
+  /**
+   * @dev Gets the bucket index at `bitIndex`.
+   */
   function getBucketFromBitIndex(
     uint256 bitIndex
   ) internal pure returns (uint256 bucket) {
     bucket = bitIndex >> 8;
+  }
+
+  /**
+   * @dev Returns a bitmask representing a single bit at `bitIndex`.
+   */
+  function getBitmaskFromBitIndex(
+    uint256 bitIndex
+  ) internal pure returns (uint256 mask) {
+    mask = 1 << (bitIndex & 0xff);
   }
 
   /**
@@ -35,6 +47,13 @@ library SdeBitmapsCore {
   }
 
   /**
+   * @dev Inverts the contents of a bucket.
+   */
+  function flipBucket(BitMap storage bitmap, uint256 bucketIndex) internal {
+    bitmap._data[bucketIndex] = ~bitmap._data[bucketIndex];
+  }
+
+  /**
    * @dev Returns whether the bit at `index` is set.
    * Originally published in Bitmaps.sol by OpenZeppelin as `get`
    */
@@ -42,8 +61,8 @@ library SdeBitmapsCore {
     BitMap storage _bitmap,
     uint256 _index
   ) internal view returns (bool isSet) {
-    uint256 bucket = _index >> 8;
-    uint256 mask = 1 << (_index & 0xff);
+    uint256 bucket = (getBucketFromBitIndex(_index));
+    uint256 mask = getBitmaskFromBitIndex(_index);
     return _bitmap._data[bucket] & mask != 0;
   }
 
@@ -52,9 +71,9 @@ library SdeBitmapsCore {
    * Orignally published in Bitmaps.sol by OpenZeppelin as `set`
    */
   function setBit(BitMap storage bitmap, uint256 bitIndex) internal {
-    uint256 bucket = bitIndex >> 8;
-    uint256 mask = 1 << (bitIndex & 0xff);
-    bitmap._data[bucket] |= mask;
+    bitmap._data[getBucketFromBitIndex(bitIndex)] |= getBitmaskFromBitIndex(
+      bitIndex
+    );
   }
 
   /**
@@ -62,23 +81,57 @@ library SdeBitmapsCore {
    * Orignally published in Bitmaps.sol by OpenZeppelin as `unset`
    */
   function unsetBit(BitMap storage bitmap, uint256 bitIndex) internal {
-    uint256 bucket = getBucketFromBitIndex(bitIndex);
-    uint256 mask = 1 << (bitIndex & 0xff);
-    bitmap._data[bucket] &= ~mask;
+    bitmap._data[getBucketFromBitIndex(bitIndex)] &= ~getBitmaskFromBitIndex(
+      bitIndex
+    );
   }
+
+  /**
+   * @dev Toggles the bit at `index`.
+   */
+  function flipBit(BitMap storage bitmap, uint256 bitIndex) internal {
+    bitmap._data[getBucketFromBitIndex(bitIndex)] ^= getBitmaskFromBitIndex(
+      bitIndex
+    );
+  }
+
+  /**
+   * @dev Bit shift left
+   */
+  function shiftLeft(
+    BitMap storage bitmap,
+    uint256 bucketIndex,
+    uint8 places
+  ) internal {
+    bitmap._data[bucketIndex] = bitmap._data[bucketIndex] << places;
+  }
+
+  /**
+   * @dev Bit shift right
+   */
+  function shiftRight(
+    BitMap storage bitmap,
+    uint256 bucketIndex,
+    uint8 places
+  ) internal {
+    uint256 bucket = bitmap._data[bucketIndex];
+    bitmap._data[bucketIndex] = bucket >> places;
+  }
+
+  // ##### UNTESTED CODE #####
 
   // TODO: tests
   /**
-   * @dev Sets the bit indices in `indeices` in the bucket at `bucketIndex`.
+   * @dev Sets the bit indices in `indices` in the bucket at `bucketIndex`.
    */
   function setBitsInBucket(
     BitMap storage _bitmap,
     uint256 bucketIndex,
-    uint8[] calldata indeices
+    uint8[] calldata indices
   ) internal {
     uint256 bucket = _bitmap._data[bucketIndex];
-    for (uint256 i = 0; i < indeices.length; i++) {
-      bucket |= 1 << indeices[i];
+    for (uint256 i = 0; i < indices.length; i++) {
+      bucket |= 1 << indices[i];
     }
     _bitmap._data[bucketIndex] = bucket;
   }
@@ -86,16 +139,16 @@ library SdeBitmapsCore {
   // TODO: tests
   /**
    *
-   * @dev Unsets the bit indices in `indeices` in the bucket at `bucketIndex`.
+   * @dev Unsets the bit indices in `indices` in the bucket at `bucketIndex`.
    */
   function unsetBitsInBucket(
     BitMap storage _bitmap,
     uint256 bucketIndex,
-    uint8[] calldata indeices
+    uint8[] calldata indices
   ) internal {
     uint256 bucket = _bitmap._data[bucketIndex];
-    for (uint256 i = 0; i < indeices.length; i++) {
-      bucket &= ~(1 << indeices[i]);
+    for (uint256 i = 0; i < indices.length; i++) {
+      bucket &= ~(1 << indices[i]);
     }
     _bitmap._data[bucketIndex] = bucket;
   }

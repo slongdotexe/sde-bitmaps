@@ -23,29 +23,56 @@ contract SdeBitmapsExternal is ISdeBitmapsExternal {
 
   function test_getBucket(
     uint256 bucketIndex
-  ) external view returns (uint256 bucketBits) {
+  ) external view override returns (uint256 bucketBits) {
     bucketBits = testBitmap.getBucket(bucketIndex);
   }
 
-  function test_setBucket(uint256 bucketIndex, uint256 bucketBits) external {
+  function test_setBucket(
+    uint256 bucketIndex,
+    uint256 bucketBits
+  ) external override {
     testBitmap.setBucket(bucketIndex, bucketBits);
   }
 
-  function test_getBit(uint256 bitIndex) external view returns (bool isSet) {
+  function test_getBit(
+    uint256 bitIndex
+  ) external view override returns (bool isSet) {
     isSet = testBitmap.getBit(bitIndex);
   }
 
-  function test_setBit(uint256 bitIndex) external {
+  function test_setBit(uint256 bitIndex) external override {
     testBitmap.setBit(bitIndex);
   }
 
-  function test_unsetBit(uint256 bitIndex) external {
+  function test_unsetBit(uint256 bitIndex) external override {
     testBitmap.unsetBit(bitIndex);
   }
 
   function test_getBucketFromBitIndex(
     uint256 bitIndex
-  ) external pure returns (uint256 bucket) {
+  ) external pure override returns (uint256 bucket) {
     bucket = SdeBitmapsCore.getBucketFromBitIndex(bitIndex);
+  }
+
+  function test_getBitmaskFromBitIndex(
+    uint256 bitIndex
+  ) external pure override returns (uint256 mask) {
+    mask = SdeBitmapsCore.getBitmaskFromBitIndex(bitIndex);
+  }
+
+  function test_flipBucket(uint256 bucketIndex) external override {
+    testBitmap.flipBucket(bucketIndex);
+  }
+
+  function test_flipBit(uint256 bitIndex) external override {
+    testBitmap.flipBit(bitIndex);
+  }
+
+  function test_shiftLeft(uint256 bucketIndex, uint8 shift) external override {
+    testBitmap.shiftLeft(bucketIndex, shift);
+  }
+
+  function test_shiftRight(uint256 bucketIndex, uint8 shift) external override {
+    testBitmap.shiftRight(bucketIndex, shift);
   }
 }

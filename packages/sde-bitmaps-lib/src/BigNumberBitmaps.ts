@@ -1,14 +1,14 @@
-import { BigNumber } from "@ethersproject/bignumber";
-import _BN from "bn.js";
+import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
+import BN from "bn.js";
 
 import { getMaxBN } from "./helpers";
 
-import BN = _BN;
+export type BignumberBitmapsish = BigNumberish | BigNumberBitmaps;
 
 export class BigNumberBitmaps {
-  public value: BigInt;
+  public value: bigint;
 
-  constructor(val: BigInt) {
+  constructor(val: bigint) {
     this.value = val;
   }
 
@@ -64,18 +64,34 @@ export class BigNumberBitmaps {
     return BigNumberBitmaps.from(bn);
   }
 
-  bitShiftLeft(places: number, width?: number): BigNumberBitmaps {
+  shiftLeft(places: number, width?: number): BigNumberBitmaps {
     const bn = this.toBN();
     const bnWidth = bn.bitLength();
-    const result = bn.shln(places).maskn(width ?? bnWidth);
+    // Preserve the original width of the bitmap. Due to bn.js effectively supporting unlimited word size we need to mask the result to the original width as would happen on-chain.
+    const result = bn.shln(places).imaskn(width ?? bnWidth);
     return BigNumberBitmaps.from(result);
   }
 
-  bitShiftRight(places: number, width?: number): BigNumberBitmaps {
+  shiftRight(places: number): BigNumberBitmaps {
     const bn = this.toBN();
-    const bnWidth = bn.bitLength();
-    const result = bn.shrn(places).maskn(width ?? bnWidth);
+    // Due to being little-endian we don't need to mask off extra bits as they're intrinsically masked off by being shifted below the 0th bit.
+    const result = bn.shrn(places);
     return BigNumberBitmaps.from(result);
+  }
+
+  flip(): BigNumberBitmaps {
+    const bn = this.toBN();
+    // Explicitly provide the intended bit length such that a bitwise inversion behaves as the EVM does
+    return BigNumberBitmaps.from(bn.notn(256));
+  }
+
+  flipBit(index: number): BigNumberBitmaps {
+    const bn = this.toBN();
+    return bn.testn(index)
+      ? // @ts-expect-error @types issue
+        BigNumberBitmaps.from(bn.setn(index, 0))
+      : // @ts-expect-error @types issue
+        BigNumberBitmaps.from(bn.setn(index, 1));
   }
 
   selectInsideRange(
@@ -110,7 +126,7 @@ export class BigNumberBitmaps {
   }
 
   toBigNumber(): BigNumber {
-    return BigNumber.from(this.value.toString());
+    return BigNumber.from(this.value);
   }
 
   toBigInt(): BigInt {
@@ -125,29 +141,25 @@ export class BigNumberBitmaps {
     if (value instanceof BigNumberBitmaps) {
       return value;
     }
-    if (value instanceof BigNumber) {
-      return new BigNumberBitmaps(BigInt(value.toString()));
-    }
-    if (value instanceof BN) {
-      return new BigNumberBitmaps(BigInt(value.toString()));
-    }
-
-    if (value instanceof BigInt) {
-      return new BigNumberBitmaps(BigInt(value.toString()));
-    }
-
-    return new BigNumberBitmaps(BigInt(BigNumber.from(value).toString()));
+    return new BigNumberBitmaps(BigNumber.from(String(value)).toBigInt());
   }
 
   static fromBinary(binary: string): BigNumberBitmaps {
     return BigNumberBitmaps.from(`0x${new BN(binary, 2).toString("hex")}`);
   }
 
-  static BigNumberishToBN(value: BigNumber): BN {
-    const hex = BigNumber.from(value).toHexString();
-    if (hex[0] === "-") {
-      return new BN(`-${hex.substring(3)}`, "hex");
-    }
-    return new BN(hex.substring(2), "hex");
+  static getBucketFromBitIndex(
+    bitIndex: BignumberBitmapsish
+  ): BigNumberBitmaps {
+    return BigNumberBitmaps.from(bitIndex).shiftRight(8);
+  }
+
+  static getBitmaskFromBitIndex(
+    bitIndex: BignumberBitmapsish
+  ): BigNumberBitmaps {
+    const normalisedIndex = BigNumberBitmaps.from(bitIndex)
+      .toBN()
+      .mod(new BN(256));
+    return BigNumberBitmaps.from(0).setBit(normalisedIndex.toNumber());
   }
 }

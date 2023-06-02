@@ -18,4 +18,16 @@ interface ISdeBitmapsExternal {
   function test_setBit(uint256 bitIndex) external;
 
   function test_unsetBit(uint256 bitIndex) external;
+
+  function test_flipBucket(uint256 bucketIndex) external;
+
+  function test_flipBit(uint256 bitIndex) external;
+
+  function test_getBitmaskFromBitIndex(
+    uint256 bitIndex
+  ) external pure returns (uint256 mask);
+
+  function test_shiftLeft(uint256 bucketIndex, uint8 shift) external;
+
+  function test_shiftRight(uint256 bucketIndex, uint8 shift) external;
 }
