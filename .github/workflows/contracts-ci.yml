@@ -19,6 +19,9 @@ jobs:
         with:
           cache: yarn
 
+      - name: 🧶 Install Yarn
+        run: npm install -g yarn
+
       - name: ⚙️ Setup Node
         uses: actions/setup-node@v3
         with:
