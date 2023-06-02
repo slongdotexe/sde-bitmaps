@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: trailofbits/etheno:latest
+      options: --user root
     steps:
       - name: 🏗 Checkout Repo
         uses: actions/checkout@v2
