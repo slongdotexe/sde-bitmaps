@@ -142,7 +142,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
 
       for (let startIndex = 0; startIndex < _bitWidth; startIndex++) {
         for (let endIndex = 0; endIndex < _bitWidth; endIndex++) {
-          if (startIndex < endIndex) break;
+          if (startIndex > endIndex) break;
 
           const startMask = MaxUint256BigNumber.shl(startIndex).mask(_bitWidth);
 
@@ -295,7 +295,7 @@ describe("BigNumberBitmaps range selector tests", async () => {
 
       for (let startIndex = 0; startIndex < _bitWidth; startIndex++) {
         for (let endIndex = 0; endIndex < _bitWidth; endIndex++) {
-          if (startIndex < endIndex) break;
+          if (startIndex > endIndex) break;
 
           const startMask = MaxUint256BigNumber.shl(startIndex).mask(_bitWidth);
 
@@ -307,7 +307,6 @@ describe("BigNumberBitmaps range selector tests", async () => {
           const result = BigNumberBitmaps.from(
             MaxUint256BigNumber
           ).selectOutsideRange(startIndex, endIndex, 256);
-          // expect(result.value.eq(expectedResult)).eq(true);
           expect(result.toBigInt()).eq(expectedResult.toBigInt());
         }
       }

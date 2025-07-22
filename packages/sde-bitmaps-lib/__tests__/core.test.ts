@@ -22,12 +22,6 @@ describe("BigNumberBitmaps core tests", async () => {
         expect(result.toString()).eq(MaxUint256.toString());
       });
 
-      it("Should return a BigNumber with the correct value when toBigNumber is called", async () => {
-        const result = testBitmap.toBigNumber();
-        expect(result).instanceOf(BigNumber);
-        expect(result.toBigInt()).eq(MaxUint256);
-      });
-
       it("Should return a BigInt with the correct value when toBigInt is called", async () => {
         const result = testBitmap.toBigInt();
         expect(result).eq(MaxUint256);

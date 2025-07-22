@@ -1,1 +1,1 @@
-export * from "./BigNumberBitmaps";
+export * from './BigNumberBitmaps'

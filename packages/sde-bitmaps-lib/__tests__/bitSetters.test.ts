@@ -77,5 +77,3 @@ describe("BigNumberBitmaps bit setter tests", async () => {
     });
   });
 });
-
-export {};
