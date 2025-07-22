@@ -17,7 +17,6 @@
     "axios": "^1.2.2",
     "bn.js": "^5.2.1",
     "ethers": "^5.7.2",
-    "ethers-v6": "npm:ethers",
     "mongoose": "^6.8.3"
   },
   "devDependencies": {

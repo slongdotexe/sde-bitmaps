@@ -7,22 +7,49 @@ library SdeBitmapsCore {
     mapping(uint256 => uint256) _data;
   }
 
+  // ###  Bitwise Getters/Setters  ###
+  // ###                      ###
+
   /**
-   * @dev Gets the bucket index at `bitIndex`.
+   * @dev Sets the bit at `index`.
+   * Orignally published in Bitmaps.sol by OpenZeppelin as `set`
    */
-  function getBucketFromBitIndex(
-    uint256 bitIndex
-  ) internal pure returns (uint256 bucket) {
-    bucket = bitIndex >> 8;
+  function setBit(BitMap storage bitmap, uint256 bitIndex) internal {
+    bitmap._data[getBucketFromBitIndex(bitIndex)] |= getBitMaskFromBitIndex(
+      bitIndex
+    );
   }
 
   /**
-   * @dev Returns a bitmask representing a single bit at `bitIndex`.
+   * @dev Returns whether the bit at `index` is set.
+   * Originally published in Bitmaps.sol by OpenZeppelin as `get`
    */
-  function getBitmaskFromBitIndex(
-    uint256 bitIndex
-  ) internal pure returns (uint256 mask) {
-    mask = 1 << (bitIndex & 0xff);
+  function getBit(
+    BitMap storage _bitmap,
+    uint256 _index
+  ) internal view returns (bool isSet) {
+    uint256 bucket = (getBucketFromBitIndex(_index));
+    uint256 mask = getBitMaskFromBitIndex(_index);
+    return _bitmap._data[bucket] & mask != 0;
+  }
+
+  /**
+   * @dev Unsets the bit at `index`.
+   * Originally published in Bitmaps.sol by OpenZeppelin as `unset`
+   */
+  function unsetBit(BitMap storage bitmap, uint256 bitIndex) internal {
+    bitmap._data[getBucketFromBitIndex(bitIndex)] &= ~getBitMaskFromBitIndex(
+      bitIndex
+    );
+  }
+
+  /**
+   * @dev Toggles the bit at `index`.
+   */
+  function flipBit(BitMap storage bitmap, uint256 bitIndex) internal {
+    bitmap._data[getBucketFromBitIndex(bitIndex)] ^= getBitMaskFromBitIndex(
+      bitIndex
+    );
   }
 
   /**
@@ -46,53 +73,48 @@ library SdeBitmapsCore {
     bitmap._data[index] = bucketContents;
   }
 
+  function setBitsInRange(
+    BitMap storage bitmap,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal {
+    _updateBitsInRange(bitmap, startIndex, endIndex, true);
+  }
+
+  function unsetBitsInRange(
+    BitMap storage bitmap,
+    uint256 startIndex,
+    uint256 endIndex
+  ) internal {
+    _updateBitsInRange(bitmap, startIndex, endIndex, false);
+  }
+
+  // ###  Utility Operations  ###
+  // ###                      ###
+
+  /**
+   * @dev Gets the bucket index at `bitIndex`.
+   */
+  function getBucketFromBitIndex(
+    uint256 bitIndex
+  ) internal pure returns (uint256 bucket) {
+    bucket = bitIndex >> 8;
+  }
+
+  /**
+   * @dev Returns a bitmask representing a single bit at `bitIndex`.
+   */
+  function getBitMaskFromBitIndex(
+    uint256 bitIndex
+  ) internal pure returns (uint256 mask) {
+    mask = 1 << (bitIndex & 0xff);
+  }
+
   /**
    * @dev Inverts the contents of a bucket.
    */
   function flipBucket(BitMap storage bitmap, uint256 bucketIndex) internal {
     bitmap._data[bucketIndex] = ~bitmap._data[bucketIndex];
-  }
-
-  /**
-   * @dev Returns whether the bit at `index` is set.
-   * Originally published in Bitmaps.sol by OpenZeppelin as `get`
-   */
-  function getBit(
-    BitMap storage _bitmap,
-    uint256 _index
-  ) internal view returns (bool isSet) {
-    uint256 bucket = (getBucketFromBitIndex(_index));
-    uint256 mask = getBitmaskFromBitIndex(_index);
-    return _bitmap._data[bucket] & mask != 0;
-  }
-
-  /**
-   * @dev Sets the bit at `index`.
-   * Orignally published in Bitmaps.sol by OpenZeppelin as `set`
-   */
-  function setBit(BitMap storage bitmap, uint256 bitIndex) internal {
-    bitmap._data[getBucketFromBitIndex(bitIndex)] |= getBitmaskFromBitIndex(
-      bitIndex
-    );
-  }
-
-  /**
-   * @dev Unsets the bit at `index`.
-   * Orignally published in Bitmaps.sol by OpenZeppelin as `unset`
-   */
-  function unsetBit(BitMap storage bitmap, uint256 bitIndex) internal {
-    bitmap._data[getBucketFromBitIndex(bitIndex)] &= ~getBitmaskFromBitIndex(
-      bitIndex
-    );
-  }
-
-  /**
-   * @dev Toggles the bit at `index`.
-   */
-  function flipBit(BitMap storage bitmap, uint256 bitIndex) internal {
-    bitmap._data[getBucketFromBitIndex(bitIndex)] ^= getBitmaskFromBitIndex(
-      bitIndex
-    );
   }
 
   /**
@@ -123,67 +145,116 @@ library SdeBitmapsCore {
   // TODO: tests
   /**
    * @dev Sets the bit indices in `indices` in the bucket at `bucketIndex`.
+   * Optimized version that builds the mask first, then applies it in one operation.
    */
   function setBitsInBucket(
     BitMap storage _bitmap,
     uint256 bucketIndex,
     uint8[] calldata indices
   ) internal {
-    uint256 bucket = _bitmap._data[bucketIndex];
-    for (uint256 i = 0; i < indices.length; i++) {
-      bucket |= 1 << indices[i];
+    uint256 mask = 0;
+    // Build mask with all bits to set
+    for (uint256 i = 0; i < indices.length; ) {
+      mask |= 1 << indices[i];
+      unchecked {
+        ++i;
+      }
     }
-    _bitmap._data[bucketIndex] = bucket;
+    // Apply mask in single operation
+    _bitmap._data[bucketIndex] |= mask;
   }
 
   // TODO: tests
   /**
-   *
    * @dev Unsets the bit indices in `indices` in the bucket at `bucketIndex`.
+   * Optimized version that builds the mask first, then applies it in one operation.
    */
   function unsetBitsInBucket(
     BitMap storage _bitmap,
     uint256 bucketIndex,
     uint8[] calldata indices
   ) internal {
-    uint256 bucket = _bitmap._data[bucketIndex];
-    for (uint256 i = 0; i < indices.length; i++) {
-      bucket &= ~(1 << indices[i]);
+    uint256 mask = 0;
+    // Build mask with all bits to unset
+    for (uint256 i = 0; i < indices.length; ) {
+      mask |= 1 << indices[i];
+      unchecked {
+        ++i;
+      }
     }
-    _bitmap._data[bucketIndex] = bucket;
+    // Apply inverted mask in single operation
+    _bitmap._data[bucketIndex] &= ~mask;
   }
 
-  // TODO: tests
   /**
-   * @dev Returns bucket at `bucketIndex`, masked to only include bits between `_start` and `_end`.
+   * @dev Internal helper to set or unset bits in a range across buckets.
+   * Optimized for gas efficiency with pre-computed constants and reduced operations.
    */
-  function selectInsideRange(
-    BitMap storage _bitmap,
-    uint256 _bucketIndex,
-    uint8 _start,
-    uint8 _end
-  ) internal view returns (uint256 bits) {
-    uint256 mask = (type(uint256).max << _start) &
-      (type(uint256).max >> (255 - _end));
-    bits = getBucket(_bitmap, _bucketIndex) & mask;
+  function _updateBitsInRange(
+    BitMap storage bitmap,
+    uint256 startIndex,
+    uint256 endIndex,
+    bool setBits
+  ) private {
+    if (startIndex > endIndex) return;
+
+    uint256 startBucket = startIndex >> 8;
+    uint256 endBucket = endIndex >> 8;
+
+    // Single bucket optimization
+    if (startBucket == endBucket) {
+      uint256 startBit = startIndex & 0xff;
+      uint256 endBit = endIndex & 0xff;
+
+      uint256 mask;
+      if (startBit == 0 && endBit == 255) {
+        mask = type(uint256).max;
+      } else {
+        mask =
+          (type(uint256).max >> (255 - endBit)) &
+          (type(uint256).max << startBit);
+      }
+
+      if (setBits) {
+        bitmap._data[startBucket] |= mask;
+      } else {
+        bitmap._data[startBucket] &= ~mask;
+      }
+      return;
+    }
+    uint256 bucketData;
+
+    // Handle first partial bucket
+    uint256 startBit = startIndex & 0xff;
+    if (startBit == 0) {
+      bitmap._data[startBucket] = setBits ? type(uint256).max : 0;
+    } else {
+      uint256 mask = type(uint256).max << startBit;
+      bucketData = bitmap._data[startBucket];
+      bitmap._data[startBucket] = setBits
+        ? (bucketData | mask)
+        : (bucketData & ~mask);
+    }
+
+    // Handle middle buckets
+    uint256 middleValue = setBits ? type(uint256).max : 0;
+    for (uint256 b = startBucket + 1; b < endBucket; ) {
+      bitmap._data[b] = middleValue;
+      unchecked {
+        ++b;
+      }
+    }
+
+    // Handle last partial bucket
+    uint256 endBit = endIndex & 0xff;
+    if (endBit == 255) {
+      bitmap._data[endBucket] = setBits ? type(uint256).max : 0;
+    } else {
+      uint256 mask = (1 << (endBit + 1)) - 1;
+      bucketData = bitmap._data[endBucket];
+      bitmap._data[endBucket] = setBits
+        ? (bucketData | mask)
+        : (bucketData & ~mask);
+    }
   }
-
-  //TODO WIP
-  // function maskInsideRange(
-  //   uint256 _bits,
-  //   uint256 _start,
-  //   uint256 _end
-  // ) internal pure returns (uint256 bits) {
-  //   uint256 mask = (type(uint256).max << _start) & (type(uint256).max >> _end);
-  //   bits = _bits & mask;
-  // }
-
-  // function maskOutsideRange(
-  //   uint256 _bits,
-  //   uint256 _start,
-  //   uint256 _end
-  // ) internal pure returns (uint256 bits) {
-  //   uint256 mask = (type(uint256).max << _start) & (type(uint256).max >> _end);
-  //   bits = _bits & ~mask;
-  // }
 }

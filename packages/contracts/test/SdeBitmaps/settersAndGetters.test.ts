@@ -265,5 +265,189 @@ describe("SdeBitmaps setters and getters", async () => {
         expect(await _SdeBitmapsExternal.test_getBit(maxUint256)).to.be.false;
       });
     });
+
+    describe("setBitsInRange", () => {
+      let sdeBitmapsExternal: SdeBitmapsExternal;
+
+      beforeEach(async () => {
+        await deployments.fixture("testbed");
+        sdeBitmapsExternal = await ethers.getContract("SdeBitmapsExternal");
+      });
+      describe("Single bucket operations", () => {
+        it("Should set bits 0-2 in bucket 0", async () => {
+          await sdeBitmapsExternal.test_setBitsInRange(0, 2);
+
+          expect(await sdeBitmapsExternal.test_getBit(0)).to.equal(true);
+          expect(await sdeBitmapsExternal.test_getBit(1)).to.equal(true);
+          expect(await sdeBitmapsExternal.test_getBit(2)).to.equal(true);
+          expect(await sdeBitmapsExternal.test_getBit(3)).to.equal(false);
+        });
+
+        it("Should set bits 10-15 in bucket 0", async () => {
+          await sdeBitmapsExternal.test_setBitsInRange(10, 15);
+
+          // eslint-disable-next-line no-plusplus -- --
+          for (let i = 10; i <= 15; i++) {
+            // eslint-disable-next-line no-await-in-loop -- --
+            expect(await sdeBitmapsExternal.test_getBit(i)).to.equal(true);
+          }
+          expect(await sdeBitmapsExternal.test_getBit(9)).to.equal(false);
+          expect(await sdeBitmapsExternal.test_getBit(16)).to.equal(false);
+        });
+
+        it("Should set single bit", async () => {
+          await sdeBitmapsExternal.test_setBitsInRange(42, 42);
+
+          expect(await sdeBitmapsExternal.test_getBit(42)).to.equal(true);
+          expect(await sdeBitmapsExternal.test_getBit(41)).to.equal(false);
+          expect(await sdeBitmapsExternal.test_getBit(43)).to.equal(false);
+        });
+
+        it("Should set entire bucket (0-255)", async () => {
+          await sdeBitmapsExternal.test_setBitsInRange(0, 255);
+
+          expect(await sdeBitmapsExternal.test_getBucket(0)).to.equal(
+            ethers.constants.MaxUint256
+          );
+        });
+      });
+
+      describe("Multi-bucket operations", () => {
+        it("Should set bits across two buckets (250-260)", async () => {
+          await sdeBitmapsExternal.test_setBitsInRange(250, 260);
+
+          // Check bits in first bucket (250-255)
+          // eslint-disable-next-line no-plusplus -- --
+          for (let i = 250; i <= 255; i++) {
+            // eslint-disable-next-line no-await-in-loop -- --
+            expect(await sdeBitmapsExternal.test_getBit(i)).to.equal(true);
+          }
+
+          // Check bits in second bucket (256-260)
+          // eslint-disable-next-line no-plusplus -- --
+          for (let i = 256; i <= 260; i++) {
+            // eslint-disable-next-line no-await-in-loop -- --
+            expect(await sdeBitmapsExternal.test_getBit(i)).to.equal(true);
+          }
+
+          expect(await sdeBitmapsExternal.test_getBit(249)).to.equal(false);
+          expect(await sdeBitmapsExternal.test_getBit(261)).to.equal(false);
+        });
+
+        it("Should set bits across three buckets (200-600)", async () => {
+          await sdeBitmapsExternal.test_setBitsInRange(200, 600);
+          // eslint-disable-next-line no-plusplus -- --
+          for (let i = 200; i <= 255; i++) {
+            // eslint-disable-next-line no-await-in-loop -- --
+            expect(await sdeBitmapsExternal.test_getBit(i)).to.equal(true);
+          }
+          expect(await sdeBitmapsExternal.test_getBucket(1)).to.equal(
+            ethers.constants.MaxUint256
+          );
+          // eslint-disable-next-line no-plusplus -- --
+          for (let i = 512; i <= 600; i++) {
+            // eslint-disable-next-line no-await-in-loop -- --
+            expect(await sdeBitmapsExternal.test_getBit(i)).to.equal(true);
+          }
+          expect(await sdeBitmapsExternal.test_getBit(199)).to.equal(false);
+          expect(await sdeBitmapsExternal.test_getBit(601)).to.equal(false);
+        });
+      });
+
+      describe("Edge cases", () => {
+        it("Should handle start == end", async () => {
+          await sdeBitmapsExternal.test_setBitsInRange(100, 100);
+          expect(await sdeBitmapsExternal.test_getBit(100)).to.equal(true);
+        });
+
+        it("Should preserve existing bits outside range", async () => {
+          await sdeBitmapsExternal.test_setBit(5);
+          await sdeBitmapsExternal.test_setBit(20);
+
+          await sdeBitmapsExternal.test_setBitsInRange(10, 15);
+
+          expect(await sdeBitmapsExternal.test_getBit(5)).to.equal(true);
+          expect(await sdeBitmapsExternal.test_getBit(20)).to.equal(true);
+
+          // eslint-disable-next-line no-plusplus -- --
+          for (let i = 10; i <= 15; i++) {
+            // eslint-disable-next-line no-await-in-loop -- --
+            expect(await sdeBitmapsExternal.test_getBit(i)).to.equal(true);
+          }
+        });
+      });
+    });
+
+    describe("unsetBitsInRange", () => {
+      let sdeBitmapsExternal: SdeBitmapsExternal;
+      beforeEach(async () => {
+        await deployments.fixture("testbed");
+        sdeBitmapsExternal = await ethers.getContract("SdeBitmapsExternal");
+        await sdeBitmapsExternal.test_setBucket(0, ethers.constants.MaxUint256);
+        await sdeBitmapsExternal.test_setBucket(1, ethers.constants.MaxUint256);
+        await sdeBitmapsExternal.test_setBucket(2, ethers.constants.MaxUint256);
+      });
+
+      describe("Single bucket operations", () => {
+        it("Should unset bits 0-2 in bucket 0", async () => {
+          await sdeBitmapsExternal.test_unsetBitsInRange(0, 2);
+
+          expect(await sdeBitmapsExternal.test_getBit(0)).to.equal(false);
+          expect(await sdeBitmapsExternal.test_getBit(1)).to.equal(false);
+          expect(await sdeBitmapsExternal.test_getBit(2)).to.equal(false);
+          expect(await sdeBitmapsExternal.test_getBit(3)).to.equal(true);
+        });
+
+        it("Should unset bits 10-15 in bucket 0", async () => {
+          await sdeBitmapsExternal.test_unsetBitsInRange(10, 15);
+
+          // eslint-disable-next-line no-plusplus -- --
+          for (let i = 10; i <= 15; i++) {
+            // eslint-disable-next-line no-await-in-loop -- --
+            expect(await sdeBitmapsExternal.test_getBit(i)).to.equal(false);
+          }
+          expect(await sdeBitmapsExternal.test_getBit(9)).to.equal(true);
+          expect(await sdeBitmapsExternal.test_getBit(16)).to.equal(true);
+        });
+
+        it("Should unset entire bucket (0-255)", async () => {
+          await sdeBitmapsExternal.test_unsetBitsInRange(0, 255);
+
+          expect(await sdeBitmapsExternal.test_getBucket(0)).to.equal(0);
+        });
+      });
+
+      describe("Multi-bucket operations", () => {
+        it("Should unset bits across two buckets (250-260)", async () => {
+          await sdeBitmapsExternal.test_unsetBitsInRange(250, 260);
+          // eslint-disable-next-line no-plusplus -- --
+          for (let i = 250; i <= 255; i++) {
+            // eslint-disable-next-line no-await-in-loop -- --
+            expect(await sdeBitmapsExternal.test_getBit(i)).to.equal(false);
+          }
+          // eslint-disable-next-line no-plusplus -- --
+          for (let i = 256; i <= 260; i++) {
+            // eslint-disable-next-line no-await-in-loop -- --
+            expect(await sdeBitmapsExternal.test_getBit(i)).to.equal(false);
+          }
+          expect(await sdeBitmapsExternal.test_getBit(249)).to.equal(true);
+          expect(await sdeBitmapsExternal.test_getBit(261)).to.equal(true);
+        });
+      });
+
+      it("Should preserve existing bits outside range", async () => {
+        // Unset some bits in middle
+        await sdeBitmapsExternal.test_unsetBitsInRange(10, 15);
+
+        expect(await sdeBitmapsExternal.test_getBit(9)).to.equal(true);
+        expect(await sdeBitmapsExternal.test_getBit(16)).to.equal(true);
+
+        // eslint-disable-next-line no-plusplus -- --
+        for (let i = 10; i <= 15; i++) {
+          // eslint-disable-next-line no-await-in-loop -- --
+          expect(await sdeBitmapsExternal.test_getBit(i)).to.equal(false);
+        }
+      });
+    });
   });
 });

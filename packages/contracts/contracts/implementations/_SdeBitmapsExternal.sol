@@ -57,7 +57,7 @@ contract SdeBitmapsExternal is ISdeBitmapsExternal {
   function test_getBitmaskFromBitIndex(
     uint256 bitIndex
   ) external pure override returns (uint256 mask) {
-    mask = SdeBitmapsCore.getBitmaskFromBitIndex(bitIndex);
+    mask = SdeBitmapsCore.getBitMaskFromBitIndex(bitIndex);
   }
 
   function test_flipBucket(uint256 bucketIndex) external override {
@@ -74,5 +74,23 @@ contract SdeBitmapsExternal is ISdeBitmapsExternal {
 
   function test_shiftRight(uint256 bucketIndex, uint8 shift) external override {
     testBitmap.shiftRight(bucketIndex, shift);
+  }
+
+  function test_setBitsInBucket(
+    uint256 bucketIndex,
+    uint8[] calldata indices
+  ) external {
+    testBitmap.setBitsInBucket(bucketIndex, indices);
+  }
+
+  function test_setBitsInRange(uint256 startIndex, uint256 endIndex) external {
+    testBitmap.setBitsInRange(startIndex, endIndex);
+  }
+
+  function test_unsetBitsInRange(
+    uint256 startIndex,
+    uint256 endIndex
+  ) external {
+    testBitmap.unsetBitsInRange(startIndex, endIndex);
   }
 }
