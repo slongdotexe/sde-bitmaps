@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "@shopify/eslint-plugin": "^42.0.1",
+    "@slongdotexe/eslint-config": "^0.0.2",
     "@typescript-eslint/eslint-plugin": "^5.16.0",
     "@typescript-eslint/parser": "^5.16.0",
     "eslint": "^8.12",
@@ -38,5 +39,6 @@
     "*.{json,md,html,js,jsx,ts,tsx}": [
       "prettier --write"
     ]
-  }
+  },
+  "packageManager": "yarn@4.9.2"
 }

@@ -3,7 +3,7 @@
     {
       "files": "*.sol",
       "options": {
-        "printWidth": 80,
+        "printWidth": 120,
         "tabWidth": 2,
         "useTabs": false,
         "singleQuote": false,
@@ -11,5 +11,11 @@
         "explicitTypes": "preserve"
       }
     }
-  ]
+  ],
+  "bracketSpacing": true,
+  "jsxBracketSameLine": false,
+  "printWidth": 120,
+  "semi": false,
+  "singleQuote": true,
+  "trailingComma": "all"
 }

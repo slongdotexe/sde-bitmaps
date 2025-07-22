@@ -2510,6 +2510,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@slongdotexe/eslint-config@npm:^0.0.2":
+  version: 0.0.2
+  resolution: "@slongdotexe/eslint-config@npm:0.0.2::__archiveUrl=https%3A%2F%2Fnpm.pkg.github.com%2Fdownload%2F%40slongdotexe%2Feslint-config%2F0.0.2%2F4308404f2fd1e9533c0762ccb2e4fca955ab863f"
+  peerDependencies:
+    "@shopify/eslint-plugin": ^44.0.0
+    "@slongdotexe/eslint-config": ~0.0.1
+    "@slongdotexe/tsconfig": ~0.0.1
+    "@typescript-eslint/eslint-plugin": ^7.18.0
+    "@typescript-eslint/parser": ^7.18.0
+    eslint: ^8.57.1
+    eslint-config-airbnb: ^19.0.4
+    eslint-config-prettier: ^9.1.0
+    eslint-config-universe: ^12.1.0
+    eslint-plugin-eslint-comments: ^3.2.0
+    eslint-plugin-import: ^2.31.0
+    eslint-plugin-jsx-a11y: ^6.10.2
+    eslint-plugin-prettier: ^5.2.1
+    eslint-plugin-react: ^7.37.2
+    eslint-plugin-react-hooks: ^4.6.2
+  checksum: 10c0/cef3918adabe9d094540ed9f494842143b6a4d70f7582e66625492201b79e6e778b939f46487e2e4d9dc0db3e1b92eeac3d7ed92fddd54ec09172760a177161b
+  languageName: node
+  linkType: hard
+
 "@solidity-parser/parser@npm:^0.14.0, @solidity-parser/parser@npm:^0.14.1":
   version: 0.14.5
   resolution: "@solidity-parser/parser@npm:0.14.5"
@@ -11200,6 +11223,7 @@ __metadata:
   resolution: "sde-bitmaps@workspace:."
   dependencies:
     "@shopify/eslint-plugin": "npm:^42.0.1"
+    "@slongdotexe/eslint-config": "npm:^0.0.2"
     "@typescript-eslint/eslint-plugin": "npm:^5.16.0"
     "@typescript-eslint/parser": "npm:^5.16.0"
     eslint: "npm:^8.12"
