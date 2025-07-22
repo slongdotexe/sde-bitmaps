@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "main": "index.ts",
   "license": "MIT",
-  "private": false,
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.6",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
@@ -17,9 +16,9 @@
     "hardhat-deploy": "^0.11.24",
     "hardhat-gas-reporter": "^1.0.8",
     "hardhat-tracer": "^2.1.2",
+    "sde-bitmaps-lib": "*",
     "solidity-coverage": "^0.8.1",
     "ts-node": "^10.9.1",
-    "typechain": "^8.1.0",
-    "sde-bitmaps-lib": "*"
+    "typechain": "^8.1.0"
   }
 }

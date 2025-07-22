@@ -38,7 +38,5 @@
     "*.{json,md,html,js,jsx,ts,tsx}": [
       "prettier --write"
     ]
-  },
-  "dependencies": {},
-  "packageManager": "yarn@1.22.19"
+  }
 }
