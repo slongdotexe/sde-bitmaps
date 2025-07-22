@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "main": "index.ts",
   "license": "MIT",
+  "scripts": {
+    "test": "run hardhat test",
+    "lint": "run -T eslint ./constants ./deploy ./helpers ./scripts"
+  },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.6",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
